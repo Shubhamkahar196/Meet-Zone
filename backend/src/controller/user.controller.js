@@ -2,6 +2,7 @@ import express from "express";
 import { loginSchema, signupSchema } from "../Schema/user.Schema";
 import mongoose from "mongoose";
 import User from "../models/user.models";
+import { success } from "zod";
 
 // signup
 
@@ -65,11 +66,39 @@ export const login = async (req, res) => {
     }
 
     const { username, password } = req.body;
-    // findin user
+    // finding user 
+
+    const existingUser = await User.findOne({username});
+
+    if(!existingUser){
+      return res.status(404).json({
+        success: false,
+        message: "Please signup first"
+      })
+    }
+
     // password checking
+    const isPasswordMatch = await bcrypt.compare(password,User.password);
+
     // password not matching
+    if(!isPasswordMatch){
+      return res.status(403).json({
+        success: false,
+        message: "Invalid credentials"
+      })
+    }
     // token
-    // res
+    const token = jwt.sign({
+      userId: username._id
+    },process.env.JWT_SECRET,{expiresIn: "7d"})
+
+    // send response
+
+    return res.status(200).json({
+      success: false,
+      message: "Login Successfully !",
+      token
+    })
   } catch (error) {
     console.error("Login error:", error);
 
