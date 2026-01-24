@@ -1,8 +1,10 @@
 import express from "express";
-import { loginSchema, signupSchema } from "../Schema/user.Schema";
+import { loginSchema, signupSchema } from "../Schema/user.Schema.js";
 import mongoose from "mongoose";
-import User from "../models/user.models";
+import User from "../models/user.models.js";
 import { success } from "zod";
+import jwt from 'jsonwebtoken'
+import bcrypt from 'bcrypt'
 
 // signup
 
@@ -55,6 +57,9 @@ export const Signup = async (req, res) => {
   }
 };
 
+
+// login
+
 export const login = async (req, res) => {
   try {
     const parsedData = loginSchema.safeParse(req.body);
@@ -65,7 +70,7 @@ export const login = async (req, res) => {
       });
     }
 
-    const { username, password } = req.body;
+    const { username, password } = parsedData.data;
     // finding user 
 
     const existingUser = await User.findOne({username});
@@ -78,18 +83,19 @@ export const login = async (req, res) => {
     }
 
     // password checking
-    const isPasswordMatch = await bcrypt.compare(password,User.password);
+    const isPasswordMatch = await bcrypt.compare(password,existingUser.password);
 
     // password not matching
-    if(!isPasswordMatch){
-      return res.status(403).json({
+    if (!isPasswordMatch) {
+      return res.status(401).json({
         success: false,
-        message: "Invalid credentials"
-      })
+        message: "Invalid credentials",
+      });
     }
+
     // token
     const token = jwt.sign({
-      userId: username._id
+      userId: existingUser._id
     },process.env.JWT_SECRET,{expiresIn: "7d"})
 
     // send response
@@ -97,7 +103,12 @@ export const login = async (req, res) => {
     return res.status(200).json({
       success: false,
       message: "Login Successfully !",
-      token
+      token,
+      user:{
+        id: existingUser._id,
+        username: existingUser.username
+      }
+      
     })
   } catch (error) {
     console.error("Login error:", error);
