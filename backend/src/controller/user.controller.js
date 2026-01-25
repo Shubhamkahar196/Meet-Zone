@@ -3,8 +3,8 @@ import { loginSchema, signupSchema } from "../Schema/user.Schema.js";
 import mongoose from "mongoose";
 import User from "../models/user.models.js";
 import { success } from "zod";
-import jwt from 'jsonwebtoken'
-import bcrypt from 'bcrypt'
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 // signup
 
@@ -57,7 +57,6 @@ export const Signup = async (req, res) => {
   }
 };
 
-
 // login
 
 export const login = async (req, res) => {
@@ -71,19 +70,22 @@ export const login = async (req, res) => {
     }
 
     const { username, password } = parsedData.data;
-    // finding user 
+    // finding user
 
-    const existingUser = await User.findOne({username});
+    const existingUser = await User.findOne({ username });
 
-    if(!existingUser){
+    if (!existingUser) {
       return res.status(404).json({
         success: false,
-        message: "Please signup first"
-      })
+        message: "Please signup first",
+      });
     }
 
     // password checking
-    const isPasswordMatch = await bcrypt.compare(password,existingUser.password);
+    const isPasswordMatch = await bcrypt.compare(
+      password,
+      existingUser.password,
+    );
 
     // password not matching
     if (!isPasswordMatch) {
@@ -94,9 +96,13 @@ export const login = async (req, res) => {
     }
 
     // token
-    const token = jwt.sign({
-      userId: existingUser._id
-    },process.env.JWT_SECRET,{expiresIn: "7d"})
+    const token = jwt.sign(
+      {
+        userId: existingUser._id,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" },
+    );
 
     // send response
 
@@ -104,12 +110,11 @@ export const login = async (req, res) => {
       success: false,
       message: "Login Successfully !",
       token,
-      user:{
+      user: {
         id: existingUser._id,
-        username: existingUser.username
-      }
-      
-    })
+        username: existingUser.username,
+      },
+    });
   } catch (error) {
     console.error("Login error:", error);
 
