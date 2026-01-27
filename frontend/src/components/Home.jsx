@@ -1,4 +1,9 @@
+import { useNavigate } from "react-router-dom";
+import { Button } from "./ui/button";
+
 const Home = () => {
+  const navigate = useNavigate(); // Hook for navigation
+
   return (
     <div className="relative min-h-screen">
       {/* Background */}
@@ -22,9 +27,10 @@ const Home = () => {
             <button className="border px-4 py-2 rounded text-white font-bold cursor-pointer">
               Join as Guest
             </button>
-            <button className="bg-yellow-500 text-white font-bold px-4 py-2 rounded cursor-pointer">
+            {/* <button >
               Login
-            </button>
+            </button> */}
+            <Button className="bg-yellow-500 text-white font-bold cursor-pointer" onClick={() => navigate("/login")}>Login</Button>
           </div>
         </nav>
 
@@ -55,7 +61,7 @@ const Home = () => {
           </div>
         </section>
       </main>
-      
+
       {/* Footer */}
 <footer className="mt-20 border-t border-white/20 py-8">
   <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-white">
