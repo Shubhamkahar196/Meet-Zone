@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   
-  const API_BASE_URL = 'http://localhost:8000'; 
+  const API_BASE_URL = 'http://localhost:8000/api/v1/user'; 
 
   // Function to handle user signup
  const signup = async (name, username, password) => {

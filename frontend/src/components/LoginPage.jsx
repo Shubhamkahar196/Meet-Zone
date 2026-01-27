@@ -1,19 +1,27 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+import { toast } from "sonner";
 
 const LoginPage = () => {
-  const [isLogin, setIsLogin] = useState(true); // Toggle between login and signup
+  const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
-    name: '',
-    username: '',
-    password: '',
+    name: "",
+    username: "",
+    password: "",
   });
-  const { login, signup, loading, error } = useAuth();
+
+  const { login, signup, loading } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -22,26 +30,43 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     let result;
+
     if (isLogin) {
       result = await login(formData.username, formData.password);
     } else {
-      result = await signup(formData.name, formData.username, formData.password);
+      result = await signup(
+        formData.name,
+        formData.username,
+        formData.password
+      );
     }
+
     if (result.success) {
-      navigate('/'); // Redirect to home on success
+      toast.success(isLogin ? "Login Successful 🎉" : "Account Created 🎉");
+
+      setFormData({ name: "", username: "", password: "" });
+      navigate("/");
+    } else {
+      toast.error(result.message);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>{isLogin ? 'Login' : 'Sign Up'}</CardTitle>
-          <CardDescription>
-            {isLogin ? 'Enter your credentials to login.' : 'Create a new account.'}
+          <CardTitle className="text-center text-2xl font-mono">
+            {isLogin ? "Login" : "Sign Up"}
+          </CardTitle>
+          <CardDescription className="text-center">
+            {isLogin
+              ? "Enter your credentials to login."
+              : "Create a new account."}
           </CardDescription>
         </CardHeader>
+
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
@@ -50,24 +75,26 @@ const LoginPage = () => {
                 <Input
                   id="name"
                   name="name"
-                  type="text"
                   value={formData.name}
                   onChange={handleChange}
-                  required={!isLogin}
+                  required
+                  className="mt-1"
                 />
               </div>
             )}
+
             <div>
               <Label htmlFor="username">Username</Label>
               <Input
                 id="username"
                 name="username"
-                type="text"
                 value={formData.username}
                 onChange={handleChange}
                 required
+                className="mt-1"
               />
             </div>
+
             <div>
               <Label htmlFor="password">Password</Label>
               <Input
@@ -77,20 +104,24 @@ const LoginPage = () => {
                 value={formData.password}
                 onChange={handleChange}
                 required
+                className="mt-1"
               />
             </div>
-            {error && <p className="text-red-500 text-sm">{error}</p>}
+
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Loading...' : (isLogin ? 'Login' : 'Sign Up')}
+              {loading ? "Loading..." : isLogin ? "Login" : "Sign Up"}
             </Button>
           </form>
+
           <div className="mt-4 text-center">
             <button
               type="button"
               onClick={() => setIsLogin(!isLogin)}
               className="text-blue-500 hover:underline"
             >
-              {isLogin ? 'Need an account? Sign Up' : 'Already have an account? Login'}
+              {isLogin
+                ? "Need an account? Sign Up"
+                : "Already have an account? Login"}
             </button>
           </div>
         </CardContent>

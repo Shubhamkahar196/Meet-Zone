@@ -6,13 +6,6 @@ const Home = () => {
 
   return (
     <div className="relative min-h-screen">
-      {/* Background */}
-      <img
-        src="./background.png"
-        alt="background"
-        className="absolute inset-0 w-full h-full object-cover -z-10"
-      />
-
       <main className="container mx-auto px-6">
         {/* Navbar */}
         <nav className="flex justify-between items-center py-6">
