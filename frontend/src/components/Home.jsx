@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 
 const Home = () => {
-  const navigate = useNavigate(); // Hook for navigation
+  const navigate = useNavigate(); 
 
   return (
     <div className="relative min-h-screen">
@@ -30,7 +30,7 @@ const Home = () => {
             {/* <button >
               Login
             </button> */}
-            <Button className="bg-yellow-500 text-white font-bold cursor-pointer" onClick={() => navigate("/login")}>Login</Button>
+            <Button className="bg-yellow-500 text-white font-bold cursor-pointer" onClick={() => navigate("/signup")}>Login</Button>
           </div>
         </nav>
 
@@ -46,7 +46,7 @@ const Home = () => {
               Cover a distance by meet-zone
             </p>
 
-            <button className="bg-blue-500 text-white font-bold px-6 py-3 rounded cursor-pointer">
+            <button onClick={()=> navigate("/signup")} className="bg-blue-500 text-white font-bold px-6 py-3 rounded cursor-pointer">
               Get Started
             </button>
           </div>

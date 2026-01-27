@@ -1,5 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
+import React, { createContext, useContext, useState } from 'react';
 
 // Create the AuthContext
 const AuthContext = createContext();
@@ -21,87 +22,73 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Base URL for API calls (adjust if backend is on different port)
-  const API_BASE_URL = 'http://localhost:3000'; // Assuming backend runs on port 3000
+  
+  const API_BASE_URL = 'http://localhost:8000'; 
 
   // Function to handle user signup
-  const signup = async (name, username, password) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(`${API_BASE_URL}/signup`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, username, password }),
-      });
+ const signup = async (name, username, password) => {
+  setLoading(true);
+  setError(null);
 
-      const data = await response.json();
+  try {
+    const response = await axios.post(`${API_BASE_URL}/signup`, {
+      name,
+      username,
+      password,
+    });
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Signup failed');
-      }
-
-      // On successful signup, you might want to auto-login or redirect to login
-      // For now, just return success
-      return { success: true, message: data.message };
-    } catch (err) {
-      setError(err.message);
-      return { success: false, message: err.message };
-    } finally {
-      setLoading(false);
-    }
-  };
+    return { success: true, message: response.data.message };
+  } catch (err) {
+    const msg = err.response?.data?.message || err.message;
+    setError(msg);
+    return { success: false, message: msg };
+  } finally {
+    setLoading(false);
+  }
+};
 
   // Function to handle user login
   const login = async (username, password) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(`${API_BASE_URL}/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-      });
+  setLoading(true);
+  setError(null);
 
-      const data = await response.json();
+  try {
+    const response = await axios.post(`${API_BASE_URL}/login`, {
+      username,
+      password,
+    });
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
-      }
+    const { token: newToken, user: userData } = response.data;
 
-      // Store token and user data
-      const { token: newToken, user: userData } = data;
-      setToken(newToken);
-      setUser(userData);
-      localStorage.setItem('token', newToken);
+    setToken(newToken);
+    setUser(userData);
+    localStorage.setItem("token", newToken);
 
-      return { success: true, message: data.message };
-    } catch (err) {
-      setError(err.message);
-      return { success: false, message: err.message };
-    } finally {
-      setLoading(false);
-    }
-  };
+    return { success: true, message: response.data.message };
+  } catch (err) {
+    const msg = err.response?.data?.message || err.message;
+    setError(msg);
+    return { success: false, message: msg };
+  } finally {
+    setLoading(false);
+  }
+};
 
-  // Function to handle logout
-  const logout = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem('token');
-  };
 
-  // Effect to check for existing token on app load
-  useEffect(() => {
-    if (token) {
-      // Optionally, validate token with backend here
-      // For simplicity, assume token is valid if present
-    }
-  }, [token]);
+  // // Function to handle logout
+  // const logout = () => {
+  //   setUser(null);
+  //   setToken(null);
+  //   localStorage.removeItem('token');
+  // };
+
+  // // Effect to check for existing token on app load
+  // useEffect(() => {
+  //   if (token) {
+  //     // Optionally, validate token with backend here
+     
+  //   }
+  // }, [token]);
 
   // Value object to provide to consumers
   const value = {
@@ -111,7 +98,7 @@ export const AuthProvider = ({ children }) => {
     error,
     signup,
     login,
-    logout,
+    // logout,
   };
 
   return (

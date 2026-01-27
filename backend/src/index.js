@@ -3,7 +3,8 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import connectDb from './db/config.js';
 dotenv.config();
-import createServer from 'socket.io'
+// import createServer from 'socket.io'
+import { createServer } from 'node:http';
 
 
 
