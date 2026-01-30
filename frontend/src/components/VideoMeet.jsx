@@ -96,13 +96,69 @@ const VideoMeet = () => {
 
   // =========== Socket ============
 
-  const connectToSokectServer = () => {
-    socketRef.current = io(server_url);
+  // todo
+  const addMessage = () =>{
 
-    socketRef.current.on("connect", () => {
-      socketIdRef.current = socketRef.current.id;
-      console.log("Connected:", socketIdRef.current);
-    });
+  }
+  // todo
+  const gotMessageFromServer = (fromId,message)=>{
+
+  }
+
+  const connectToSokectServer = () => {
+    socketRef.current = io(server_url,{secure: false});
+       
+    socketRef.current.on('signal', gotMessageFromServer)
+    socketRef.current.on('connect',()=>{
+      socketRef.current.emit("join-call", window.location.href);
+      socketRef.current = socketRef.current.id;
+      socketRef.current.on("chat-message",addMessage)
+      socketRef.current.on("user-left",(id)=>{
+        setVideo((videos)=> videos.filter((video.socketId !== id))
+      })
+      socketRef.current.on("user-joined",(id,clients)=>{
+        clients.forEach(socketListId)=>{
+          connections[socketListId] = new RTCPeerConnection(peerConfigConnections);
+          connections[socketIdRef].onicecandidate=(event) =>{
+            if(event.candidate !== null){
+              socketRef.current.emit("signal", socketListId,JSON.stringify({'ice' : event.candidate}))
+            }
+          }
+          connections[socketListId].onaddstream =(event)=>{
+            let videoExist = videoRef.current.find(video=> video.socketId === socketId);
+
+            if(videoExist){
+              setVideo(videos =>{
+                const updateVideos = videos.map(video =>
+                  video.socketId === socketListId ? { ...video, stream: event.stream} : video
+                );
+                videoRef.current = updateVideos;
+                return updateVideos;
+              })
+          }else{
+let newVideo = {
+  socketId: socketListId,
+  stream: event.stream,
+  autoPlay: true,
+  playsInline: true
+}
+setVideos(videos =>{
+  const updatedVideos = [...videos,newVideo];
+  videoRef.current = updateVideos;
+  return updatedVideos;
+})
+          }
+          };
+          if(window.localStream !== undefined && window.localStream !== null){
+            connections[socketListId].addStream(window.localStream);
+          }
+        }
+      })
+    })
+    // socketRef.current.on("connect", () => {
+    //   socketIdRef.current = socketRef.current.id;
+    //   console.log("Connected:", socketIdRef.current);
+    // });
   };
 
   // ========== Join =========
