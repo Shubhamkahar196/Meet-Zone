@@ -16,7 +16,7 @@ const app = express();
 const server = createServer(app)
 const io = connectToSocket(server);
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8000;
 
 await connectDb()
 
@@ -26,7 +26,7 @@ app.use(cors())
 app.use("/api/v1/user",UserRouter)
 
 
-app.listen(port,()=>{
+server.listen(port,()=>{
     console.log(`Server is running on ${port}`)
 })
 
