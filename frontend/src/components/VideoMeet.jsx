@@ -127,48 +127,52 @@ export default function VideoMeet() {
   };
 
   const getUserMediaSuccess = (stream) => {
-        try {
-            window.localStream.getTracks().forEach(track => track.stop())
-        } catch (e) { console.log(e) }
-
-        window.localStream = stream
-        localVideoref.current.srcObject = stream
-
-        for (let id in connections) {
-            if (id === socketIdRef.current) continue
-
-            connections[id].addStream(window.localStream)
-
-            connections[id].createOffer().then((description) => {
-                console.log(description)
-                connections[id].setLocalDescription(description)
-                    .then(() => {
-                        socketRef.current.emit('signal', id, JSON.stringify({ 'sdp': connections[id].localDescription }))
-                    })
-                    .catch(e => console.log(e))
-            })
-        }
-      }
- 
-
-
-  
-
-   const getUserMedia = () => {
-        if ((video && videoAvailable) || (audio && audioAvailable)) {
-            navigator.mediaDevices.getUserMedia({ video: video, audio: audio })
-                .then(getUserMediaSuccess)
-                .then((stream) => { })
-                .catch((e) => console.log(e))
-        } else {
-            try {
-                let tracks = localVideoref.current.srcObject.getTracks()
-                tracks.forEach(track => track.stop())
-            } catch (e) { }
-        }
+    try {
+      window.localStream.getTracks().forEach((track) => track.stop());
+    } catch (e) {
+      console.log(e);
     }
 
-    const getDisplayMediaSuccess = (stream) => {
+    window.localStream = stream;
+    localVideoref.current.srcObject = stream;
+
+    for (let id in connections) {
+      if (id === socketIdRef.current) continue;
+
+      connections[id].addStream(window.localStream);
+
+      connections[id].createOffer().then((description) => {
+        console.log(description);
+        connections[id]
+          .setLocalDescription(description)
+          .then(() => {
+            socketRef.current.emit(
+              "signal",
+              id,
+              JSON.stringify({ sdp: connections[id].localDescription }),
+            );
+          })
+          .catch((e) => console.log(e));
+      });
+    }
+  };
+
+  const getUserMedia = () => {
+    if ((video && videoAvailable) || (audio && audioAvailable)) {
+      navigator.mediaDevices
+        .getUserMedia({ video: video, audio: audio })
+        .then(getUserMediaSuccess)
+        .then((stream) => {})
+        .catch((e) => console.log(e));
+    } else {
+      try {
+        let tracks = localVideoref.current.srcObject.getTracks();
+        tracks.forEach((track) => track.stop());
+      } catch (e) {}
+    }
+  };
+
+  const getDisplayMediaSuccess = (stream) => {
     console.log("Here");
     try {
       window.localStream.getTracks().forEach((track) => track.stop());
@@ -177,41 +181,116 @@ export default function VideoMeet() {
     }
 
     window.localStream = stream;
-    localVideoref.current.srcObject = stream
+    localVideoref.current.srcObject = stream;
 
-    for(let id in connections){
-      if(id === socketIdRef.current) continue;
+    for (let id in connections) {
+      if (id === socketIdRef.current) continue;
+      //  facing error check it addStram()
+      connections[id].addTrack(window.localStream);
 
-      connections[id].addStream(window.localStream);
-
-      connections[id].createOffer().then((description)=>{
-        connections[id].setLocalDescription(description)
-        .then(()=>{
-          socketRef.current.emit('signal', id, JSON,stringify({'sdp' : connections[id].localDescription}))
-        }).catch(e => console.log(e));
-      })
+      connections[id].createOffer().then((description) => {
+        connections[id]
+          .setLocalDescription(description)
+          .then(() => {
+            // sdp = session description Protocol
+            socketRef.current.emit(
+              "signal",
+              id,
+              JSON,
+              stringify({ sdp: connections[id].localDescription }),
+            );
+          })
+          .catch((e) => console.log(e));
+      });
     }
 
-    stream.getTracks().forEach(track => track.onended =() =>{
-      setScreen(false);
+    stream.getTracks().forEach(
+      (track) =>
+        (track.onended = () => {
+          setScreen(false);
 
-      try {
-        const tracks = localVideoref.current.srcObject.getTracks()
-        tracks.forEach(track => track.stop());
-      } catch (error) {
-        console.log(error);
-      }
+          try {
+            const tracks = localVideoref.current.srcObject.getTracks();
+            tracks.forEach((track) => track.stop());
+          } catch (error) {
+            console.log(error);
+          }
 
-      const blackSilence = (...args) => new MediaStream([black(...args),silence()])
-      window.localStream = blackSilence()
-      localVideoRef.current.srcObject = window.localStream
+          const blackSilence = (...args) =>
+            new MediaStream([black(...args), silence()]);
+          window.localStream = blackSilence();
+          localVideoref.current.srcObject = window.localStream;
 
-      getUserMedia();
-    })
+          getUserMedia();
+        }),
+    );
   };
 
-  const gotMessageFromServer = (fromId,message)={
+  const gotMessageFromServer = (fromId, message) => {
+    let signal = JSON.parse(message);
 
+    if (fromId !== socketIdRef.current) {
+      if (signal.sdp) {
+        connections[fromId]
+          .setRemoteDescription(new RTCSessionDescription(signal.sdp))
+          .then(() => {
+            if (signal.sdp.type === "offer") {
+              connections[fromId]
+                .createAnswer()
+                .then((description) => {
+                  connections[fromId]
+                    .setLocalDescription(description)
+                    .then(() => {
+                      socketRef.current.emit(
+                        "signal",
+                        fromId,
+                        JSON.stringify({
+                          sdp: connections[fromId].localDescription,
+                        }),
+                      );
+                    })
+                    .catch((e) => console.log(e));
+                })
+                .catch((e) => console.log(e));
+            }
+          })
+          .catch((e) => console.log(e));
+      }
+
+      if (signal.ice) {
+        connections[fromId]
+          .addIceCandidate(new RTCIceCandidate(signal.ice))
+          .catch((e) => console.log(e));
+      }
+    }
+  };
+
+  // connect to server
+
+  const connectToSocketServer =() =>{
+    socketRef.current = io.connect(server_url,{secure: false});
+
+    socketRef.current.on('signal',gotMessageFromServer)
+    socketRef.current.on("connect",()=>{
+      socketRef.current.emit('join-call',window.location.href)
+      socketRef.current = socketRef.current.id
+
+      socketRef.current.on('chat-message', addMessage)
+
+      socketRef.current.on('user-left',(id)=>{
+        setVideo((videos)=> videos.filter((video)=> video.socketId !==id))
+      })
+
+      socketRef.current.on("user-joined",(id,clients)=>{
+        clients.forEach((socketListId)=>{
+
+          
+          // wait for their ice candidate
+
+          
+        })
+      })
+    })
   }
 
   // ====================================================
