@@ -2,6 +2,7 @@ import express from "express";
 import { loginSchema, signupSchema } from "../Schema/user.Schema.js";
 import mongoose from "mongoose";
 import User from "../models/user.models.js";
+import Meeting from "../models/meeting.models.js";
 import { success } from "zod";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
@@ -124,3 +125,42 @@ export const login = async (req, res) => {
     });
   }
 };
+
+
+// user history
+
+export const getHistory = async(req,res)=>{
+  const {token} = req.query;
+
+  try {
+    const user = await User.findOne({token: token});
+    const meetings = await Meeting.find({user_id: user.username});
+    res.json(meetings)
+  } catch (error) {
+    res.json({message: `Something went wrong ${error}`});
+  }
+
+}
+
+// getHistory
+
+export const addToHistory = async(req,res)=>{
+   
+  const {token,meeting_code} = req.body;
+
+  try {
+    const user = await User.findOne({token: token});
+
+    const newMeeting = new Meeting({
+      user_id: user.username,
+      meetingCode: meeting_code
+    })
+    await newMeeting.save();
+
+    res.status(201).json({
+      message: "Added code to history"
+    })
+  } catch (error) {
+    res.json({message: `Something went wrong ${error}`})
+  }
+}
