@@ -5,6 +5,7 @@ import Home from "./components/Home";
 import LoginPage from "./components/LoginPage";
 import Layout from "./components/Layout";
 import VideoMeet from "./components/VideoMeet";
+import Dashboard from "./components/Dashboard";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/signup" element={<LoginPage />} />
+            <Route path="/dashboard" element={<Dashboard/>} />
             <Route path="/:url" element={<VideoMeet/>}/>
           </Routes>
         </Layout>
