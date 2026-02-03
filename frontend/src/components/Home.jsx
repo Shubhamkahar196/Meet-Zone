@@ -2,80 +2,69 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 
 const Home = () => {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
   return (
-    <div className="relative min-h-screen">
-      <main className="container mx-auto px-6">
-        {/* Navbar */}
-        <nav className="flex justify-between items-center py-6">
-          <h1 className="text-2xl font-bold text-white">
-            <span className="text-blue-400">Meet</span>
-             
-             <b>-</b>
-            <span className="text-red-400">Zone</span>
-          </h1>
+    <div className="min-h-screen  text-white">
 
-          <div className="space-x-4">
-            <button className="border px-4 py-2 rounded text-white font-bold cursor-pointer">
-              Join as Guest
-            </button>
-            {/* <button >
+      {/* NAVBAR */}
+      <nav className="flex justify-between items-center px-8 py-6">
+        <h1 className="text-2xl font-bold">
+          <span className="text-blue-400">Meet</span>-<span className="text-red-400">Zone</span>
+        </h1>
+
+        <div className="flex gap-3">
+
+          {/* Guest */}
+          <Button variant="secondary" onClick={() => navigate("/dashboard?guest=true")}>
+            Join as Guest
+          </Button>
+
+          {/* Auth */}
+          {token ? (
+            <Button
+              variant="destructive"
+              onClick={() => {
+                localStorage.removeItem("token");
+                navigate("/");
+              }}
+            >
+              Logout
+            </Button>
+          ) : (
+            <Button onClick={() => navigate("/signup")}>
               Login
-            </button> */}
-            <Button className="bg-yellow-500 text-white font-bold cursor-pointer" onClick={() => navigate("/signup")}>Login</Button>
-          </div>
-        </nav>
+            </Button>
+          )}
+        </div>
+      </nav>
 
-        {/* Hero Section */}
-        <section className="flex flex-col md:flex-row items-center mt-16">
-          {/* Left */}
-          <div className="md:w-1/2 space-y-4">
-            <h1 className="text-5xl font-bold text-white">
-              <span className="text-yellow-500">Connect</span> with your
-            </h1>
-            <h2 className="text-5xl font-bold text-white">Loved Ones</h2>
-            <p className="text-white font-bold">
-              Cover a distance by meet-zone
-            </p>
+      {/* HERO */}
+      <div className="flex flex-col md:flex-row items-center px-10 mt-24">
 
-            <button onClick={()=> navigate("/signup")} className="bg-blue-500 text-white font-bold px-6 py-3 rounded cursor-pointer">
-              Get Started
-            </button>
-          </div>
+        <div className="md:w-1/2 space-y-4">
+          <h1 className="text-5xl font-bold">
+            <span className="text-yellow-500">Connect</span> with your
+          </h1>
+          <h2 className="text-5xl font-bold">Loved Ones</h2>
 
-          {/* Right */}
-          <div className="md:w-1/2 mt-10 md:mt-0 flex justify-center">
-            <img
-              src="./mobile.png"
-              alt="mobile"
-              className="max-w-full md:w-3/4"
-            />
-          </div>
-        </section>
-      </main>
+          <Button className="mt-4" onClick={() => navigate("/signup")}>
+            Get Started
+          </Button>
+        </div>
 
-      {/* Footer */}
-<footer className="mt-20 border-t border-white/20 py-8">
-  <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-white">
+        <div className="md:w-1/2 flex justify-center mt-10">
+          <img src="/mobile.png" className="w-96" />
+        </div>
+      </div>
 
- 
-    <h2 className="text-xl font-bold mb-4 md:mb-0">
-      <span className="text-blue-400">Meet</span>-
-      <span className="text-red-400">Zone</span>
-    </h2>
-
-   
-
-    {/* Copyright */}
-    <p className="text-sm text-white/70">
-      © {new Date().getFullYear()} Meet-Zone. All rights reserved.
-    </p>
-  </div>
-</footer>
+      {/* FOOTER */}
+      <footer className="mt-32 border-t border-zinc-800 py-6 text-center text-sm text-zinc-400">
+        © {new Date().getFullYear()} Meet-Zone
+      </footer>
 
     </div>
-    
   );
 };
 

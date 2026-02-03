@@ -1,15 +1,15 @@
 /* eslint-disable react-refresh/only-export-components */
-import axios from 'axios';
-import React, { createContext, useContext, useState } from 'react';
+import axios from "axios";
+import React, { createContext, useContext, useState } from "react";
 
 // Create the AuthContext
-const AuthContext = createContext();
+export const AuthContext = createContext();
 
 // Custom hook to use the AuthContext
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
@@ -18,62 +18,77 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   // State to hold user data and token
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token') || null);
+  const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  
-  const API_BASE_URL = 'http://localhost:8000/api/v1/user'; 
+  const API_BASE_URL = "http://localhost:8000/api/v1/user";
 
   // Function to handle user signup
- const signup = async (name, username, password) => {
-  setLoading(true);
-  setError(null);
+  const signup = async (name, username, password) => {
+    setLoading(true);
+    setError(null);
 
-  try {
-    const response = await axios.post(`${API_BASE_URL}/signup`, {
-      name,
-      username,
-      password,
-    });
+    try {
+      const response = await axios.post(`${API_BASE_URL}/signup`, {
+        name,
+        username,
+        password,
+      });
 
-    return { success: true, message: response.data.message };
-  } catch (err) {
-    const msg = err.response?.data?.message || err.message;
-    setError(msg);
-    return { success: false, message: msg };
-  } finally {
-    setLoading(false);
-  }
-};
+      return { success: true, message: response.data.message };
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message;
+      setError(msg);
+      return { success: false, message: msg };
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Function to handle user login
   const login = async (username, password) => {
-  setLoading(true);
-  setError(null);
+    setLoading(true);
+    setError(null);
 
-  try {
-    const response = await axios.post(`${API_BASE_URL}/login`, {
-      username,
-      password,
+    try {
+      const response = await axios.post(`${API_BASE_URL}/login`, {
+        username,
+        password,
+      });
+
+      const { token: newToken, user: userData } = response.data;
+
+      setToken(newToken);
+      setUser(userData);
+      localStorage.setItem("token", newToken);
+
+      return { success: true, message: response.data.message };
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message;
+      setError(msg);
+      return { success: false, message: msg };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getHistoryUser = async () => {
+    const request = await axios.get(`${API_BASE_URL}/getActivity`, {
+      params: {
+        token: localStorage.getItem("token")
+      }
     });
+    return request.data;
+  };
 
-    const { token: newToken, user: userData } = response.data;
-
-    setToken(newToken);
-    setUser(userData);
-    localStorage.setItem("token", newToken);
-
-    return { success: true, message: response.data.message };
-  } catch (err) {
-    const msg = err.response?.data?.message || err.message;
-    setError(msg);
-    return { success: false, message: msg };
-  } finally {
-    setLoading(false);
-  }
-};
-
+  const addToHistory = async (meetingCode) => {
+    const request = await axios.post(`${API_BASE_URL}/addActivity`, {
+      token: localStorage.getItem("token"),
+      meeting_code: meetingCode
+    });
+    return request;
+  };
 
   // // Function to handle logout
   // const logout = () => {
@@ -86,7 +101,7 @@ export const AuthProvider = ({ children }) => {
   // useEffect(() => {
   //   if (token) {
   //     // Optionally, validate token with backend here
-     
+
   //   }
   // }, [token]);
 
@@ -98,12 +113,10 @@ export const AuthProvider = ({ children }) => {
     error,
     signup,
     login,
+    getHistoryUser,
+    addToHistory
     // logout,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
