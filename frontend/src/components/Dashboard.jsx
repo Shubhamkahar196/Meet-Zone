@@ -42,7 +42,7 @@ const Dashboard = () => {
 
         <div className="md:w-1/2 space-y-6">
 
-          <h1 className="text-4xl font-bold">
+          <h1 className="text-4xl text-white font-bold">
             Start or Join Meeting
           </h1>
 
@@ -51,7 +51,7 @@ const Dashboard = () => {
               value={meetingCode}
               onChange={(e) => setMeetingCode(e.target.value)}
               placeholder="Meeting Code"
-              className="bg-zinc-800 px-4 py-2 rounded w-64 outline-none"
+              className="bg-zinc-800 px-4 py-2 rounded w-64 outline-none text-white font-bold"
             />
 
             <Button onClick={handleJoinVideoCall}>
@@ -60,7 +60,7 @@ const Dashboard = () => {
           </div>
 
           {isGuest && (
-            <p className="text-sm text-zinc-400">
+            <p className="text-sm text-shadow-zinc-50">
               You are joining as guest
             </p>
           )}

@@ -6,7 +6,7 @@ const Home = () => {
   const token = localStorage.getItem("token");
 
   return (
-    <div className="min-h-screen  text-white">
+    <div className="min-h-screen text-white">
 
       {/* NAVBAR */}
       <nav className="flex justify-between items-center px-8 py-6">
@@ -17,13 +17,13 @@ const Home = () => {
         <div className="flex gap-3">
 
           {/* Guest */}
-          <Button variant="secondary" onClick={() => navigate("/dashboard?guest=true")}>
+          <Button className="cursor-pointer" variant="secondary" onClick={() => navigate("/dashboard?guest=true")}>
             Join as Guest
           </Button>
 
           {/* Auth */}
           {token ? (
-            <Button
+            <Button className="cursor-pointer"
               variant="destructive"
               onClick={() => {
                 localStorage.removeItem("token");
@@ -33,7 +33,7 @@ const Home = () => {
               Logout
             </Button>
           ) : (
-            <Button onClick={() => navigate("/signup")}>
+            <Button className="cursor-pointer" onClick={() => navigate("/signup")}>
               Login
             </Button>
           )}
@@ -49,7 +49,7 @@ const Home = () => {
           </h1>
           <h2 className="text-5xl font-bold">Loved Ones</h2>
 
-          <Button className="mt-4" onClick={() => navigate("/signup")}>
+          <Button className="mt-4 cursor-pointer" onClick={() => navigate("/signup")}>
             Get Started
           </Button>
         </div>
@@ -60,7 +60,7 @@ const Home = () => {
       </div>
 
       {/* FOOTER */}
-      <footer className="mt-32 border-t border-zinc-800 py-6 text-center text-sm text-zinc-400">
+      <footer className="mt-32 border-t border-zinc-800 py-6 text-center text-sm text-white font-bold">
         © {new Date().getFullYear()} Meet-Zone
       </footer>
 

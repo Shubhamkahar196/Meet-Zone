@@ -48,7 +48,7 @@ const LoginPage = () => {
       toast.success(isLogin ? "Login Successful 🎉" : "Account Created 🎉");
 
       setFormData({ name: "", username: "", password: "" });
-      navigate("/");
+      navigate("/dashboard");
     } else {
       toast.error(result.message);
     }

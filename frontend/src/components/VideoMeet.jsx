@@ -261,6 +261,7 @@ return (
         <Card className="w-96 bg-zinc-900">
           <CardContent className="p-6 space-y-4">
             <Textarea
+            className="text-white text-2xl"
               placeholder="Enter your name"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -337,7 +338,7 @@ return (
 
         {/* CHAT PANEL */}
         {showChat && (
-          <div className="fixed right-0 top-0 w-72 h-full bg-zinc-900 p-3">
+          <div className="fixed right-0 top-0 w-72 h-full bg-blue-300 p-3">
 
             <div className="h-[85%] overflow-y-auto space-y-2">
               {messages.map((m, i) => (
@@ -352,7 +353,7 @@ return (
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={handleKeyPress}
               placeholder="Type message..."
-              className="w-full bg-zinc-800 p-2 mt-2 rounded outline-none"
+              className="w-full bg-zinc-400 text-black p-2 mt-2 rounded outline-none"
             />
 
             <Button onClick={sendMessage} className="w-full mt-2">
