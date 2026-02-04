@@ -18,12 +18,16 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white">
+    <div className="min-h-screen  text-white">
 
       {/* NAVBAR */}
       <div className="flex justify-between items-center px-10 py-6 border-b border-zinc-800">
 
         <h2 className="text-xl font-bold">Meet-Zone</h2>
+        
+        <Button>
+          History
+        </Button>
 
         <Button
           variant="destructive"

@@ -1,6 +1,7 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
@@ -13,8 +14,7 @@ import {
 } from "./ui/card";
 import { toast } from "sonner";
 
-
-const LoginPage = () => {
+export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
     name: "",
@@ -25,9 +25,8 @@ const LoginPage = () => {
   const { login, signup, loading } = useAuth();
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,98 +36,74 @@ const LoginPage = () => {
     if (isLogin) {
       result = await login(formData.username, formData.password);
     } else {
-      result = await signup(
-        formData.name,
-        formData.username,
-        formData.password
-      );
+      result = await signup(formData.name, formData.username, formData.password);
     }
 
     if (result.success) {
-      toast.success(isLogin ? "Login Successful 🎉" : "Account Created 🎉");
+      if (isLogin) {
+        toast.success("Login successful");
+        navigate("/dashboard");
+      } else {
+        toast.success("Account created — please login");
+        setIsLogin(true);
+      }
 
       setFormData({ name: "", username: "", password: "" });
-      navigate("/dashboard");
+
     } else {
       toast.error(result.message);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <Card className="w-full max-w-md">
+    <div className="flex items-center justify-center min-h-screen bg-zinc-950 text-white">
+      <Card className="w-full max-w-md bg-zinc-900 border-zinc-800">
         <CardHeader>
-          <CardTitle className="text-center text-2xl font-mono">
+          <CardTitle className="text-center text-2xl">
             {isLogin ? "Login" : "Sign Up"}
           </CardTitle>
           <CardDescription className="text-center">
-            {isLogin
-              ? "Enter your credentials to login."
-              : "Create a new account."}
+            {isLogin ? "Login to your account" : "Create new account"}
           </CardDescription>
         </CardHeader>
 
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+
             {!isLogin && (
               <div>
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  className="mt-1"
-                />
+                <Label>Name</Label>
+                <Input name="name" value={formData.name} onChange={handleChange} />
               </div>
             )}
 
             <div>
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                required
-                className="mt-1"
-              />
+              <Label>Username</Label>
+              <Input name="username" value={formData.username} onChange={handleChange} />
             </div>
 
             <div>
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                className="mt-1"
-              />
+              <Label>Password</Label>
+              <Input type="password" name="password" value={formData.password} onChange={handleChange} />
             </div>
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Loading..." : isLogin ? "Login" : "Sign Up"}
+            <Button className="w-full" disabled={loading}>
+              {loading ? "Loading..." : isLogin ? "Login" : "Signup"}
             </Button>
           </form>
 
-          <div className="mt-4 text-center">
+          <p className="text-center mt-4 text-sm">
+            {isLogin ? "No account?" : "Already have account?"}
             <button
-              type="button"
               onClick={() => setIsLogin(!isLogin)}
-              className="text-blue-500 hover:underline"
+              className="ml-2 text-blue-400"
             >
-              {isLogin
-                ? "Need an account? Sign Up"
-                : "Already have an account? Login"}
+              {isLogin ? "Signup" : "Login"}
             </button>
-          </div>
+          </p>
         </CardContent>
       </Card>
     </div>
   );
-};
+}
 
-export default LoginPage;

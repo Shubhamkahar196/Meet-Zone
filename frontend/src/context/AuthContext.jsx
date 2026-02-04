@@ -1,122 +1,76 @@
-/* eslint-disable react-refresh/only-export-components */
-import axios from "axios";
-import React, { createContext, useContext, useState } from "react";
 
-// Create the AuthContext
+
+import axios from "axios";
+import { createContext, useContext, useState } from "react";
+
 export const AuthContext = createContext();
 
-// Custom hook to use the AuthContext
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-};
+export const useAuth = () => useContext(AuthContext);
 
-// AuthProvider component to wrap the app and provide auth state
 export const AuthProvider = ({ children }) => {
-  // State to hold user data and token
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("token") || null);
+  const [token, setToken] = useState(localStorage.getItem("token"));
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   const API_BASE_URL = "http://localhost:8000/api/v1/user";
 
-  // Function to handle user signup
   const signup = async (name, username, password) => {
-    setLoading(true);
-    setError(null);
-
     try {
-      const response = await axios.post(`${API_BASE_URL}/signup`, {
+      setLoading(true);
+
+      await axios.post(`${API_BASE_URL}/signup`, {
         name,
         username,
         password,
       });
 
-      return { success: true, message: response.data.message };
+      return { success: true };
+
     } catch (err) {
-      const msg = err.response?.data?.message || err.message;
-      setError(msg);
-      return { success: false, message: msg };
+      return {
+        success: false,
+        message: err.response?.data?.message || "Signup failed",
+      };
     } finally {
       setLoading(false);
     }
   };
 
-  // Function to handle user login
   const login = async (username, password) => {
-    setLoading(true);
-    setError(null);
-
     try {
-      const response = await axios.post(`${API_BASE_URL}/login`, {
+      setLoading(true);
+
+      const res = await axios.post(`${API_BASE_URL}/login`, {
         username,
         password,
       });
 
-      const { token: newToken, user: userData } = response.data;
+      setToken(res.data.token);
+      setUser(res.data.user);
 
-      setToken(newToken);
-      setUser(userData);
-      localStorage.setItem("token", newToken);
+      localStorage.setItem("token", res.data.token);
 
-      return { success: true, message: response.data.message };
+      return { success: true };
+
     } catch (err) {
-      const msg = err.response?.data?.message || err.message;
-      setError(msg);
-      return { success: false, message: msg };
+      return {
+        success: false,
+        message: err.response?.data?.message || "Login failed",
+      };
     } finally {
       setLoading(false);
     }
   };
 
-  const getHistoryUser = async () => {
-    const request = await axios.get(`${API_BASE_URL}/getActivity`, {
-      params: {
-        token: localStorage.getItem("token")
-      }
-    });
-    return request.data;
+  const logout = () => {
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem("token");
   };
 
-  const addToHistory = async (meetingCode) => {
-    const request = await axios.post(`${API_BASE_URL}/addActivity`, {
-      token: localStorage.getItem("token"),
-      meeting_code: meetingCode
-    });
-    return request;
-  };
-
-  // // Function to handle logout
-  // const logout = () => {
-  //   setUser(null);
-  //   setToken(null);
-  //   localStorage.removeItem('token');
-  // };
-
-  // // Effect to check for existing token on app load
-  // useEffect(() => {
-  //   if (token) {
-  //     // Optionally, validate token with backend here
-
-  //   }
-  // }, [token]);
-
-  // Value object to provide to consumers
-  const value = {
-    user,
-    token,
-    loading,
-    error,
-    signup,
-    login,
-    getHistoryUser,
-    addToHistory
-    // logout,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ signup, login, logout, user, token, loading }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };

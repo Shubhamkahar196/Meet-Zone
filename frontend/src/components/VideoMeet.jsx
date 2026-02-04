@@ -63,7 +63,7 @@ export default function VideoMeet() {
   };
 
   // ====================================================
-  // USER MEDIA (ORIGINAL)
+  // USER MEDIA 
   // ====================================================
 
   const getUserMediaSuccess = (stream) => {
@@ -101,7 +101,7 @@ export default function VideoMeet() {
   };
 
   // ====================================================
-  // SOCKET (ORIGINAL)
+  // SOCKET 
   // ====================================================
 
   const gotMessageFromServer = (fromId, message) => {
