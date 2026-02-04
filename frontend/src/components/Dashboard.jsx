@@ -10,43 +10,70 @@ const Dashboard = () => {
   const isGuest = params.get("guest");
 
   const [meetingCode, setMeetingCode] = useState("");
-  const { addToHistory } = useContext(AuthContext);
+
+  const { addToHistory, token } = useContext(AuthContext);
+
+  
+  //  todo
+  // fixing addToHistory
+  // fixing issue
 
   const handleJoinVideoCall = async () => {
-    if (!isGuest) await addToHistory(meetingCode);
+    if (!isGuest && meetingCode.trim()) {
+      await addToHistory(meetingCode);
+    }
+
     navigate(`/${meetingCode}`);
+    
   };
 
   return (
     <div className="min-h-screen  text-white">
 
       {/* NAVBAR */}
-      <div className="flex justify-between items-center px-10 py-6 border-b border-zinc-800">
+      <nav className="flex justify-between items-center px-8 py-6 border-b border-zinc-800">
 
-        <h2 className="text-xl font-bold">Meet-Zone</h2>
-        
-        <Button>
-          History
-        </Button>
+        <h1 className="text-2xl font-bold">
+          <span className="text-blue-400">Meet</span>-<span className="text-red-400">Zone</span>
+        </h1>
 
-        <Button
-          variant="destructive"
-          onClick={() => {
-            localStorage.removeItem("token");
-            navigate("/");
-          }}
-        >
-          Logout
-        </Button>
+        <div className="flex gap-3">
 
-      </div>
+          {/* HISTORY ONLY FOR LOGGED USERS */}
+          {!isGuest && token && (
+            <Button
+              variant="secondary"
+              onClick={() => navigate("/history")}
+            >
+              History
+            </Button>
+          )}
+
+          {/* LOGIN / LOGOUT */}
+          {token ? (
+            <Button
+              variant="destructive"
+              onClick={() => {
+                localStorage.removeItem("token");
+                navigate("/");
+              }}
+            >
+              Logout
+            </Button>
+          ) : (
+            <Button onClick={() => navigate("/signup")}>
+              Login
+            </Button>
+          )}
+        </div>
+      </nav>
 
       {/* BODY */}
-      <div className="flex flex-col md:flex-row items-center justify-center px-10 mt-20">
+      <div className="flex flex-col md:flex-row items-center justify-center px-10 mt-24">
 
         <div className="md:w-1/2 space-y-6">
 
-          <h1 className="text-4xl text-white font-bold">
+          <h1 className="text-4xl font-bold">
             Start or Join Meeting
           </h1>
 
@@ -55,16 +82,16 @@ const Dashboard = () => {
               value={meetingCode}
               onChange={(e) => setMeetingCode(e.target.value)}
               placeholder="Meeting Code"
-              className="bg-zinc-800 px-4 py-2 rounded w-64 outline-none text-white font-bold"
+              className="bg-zinc-800 px-4 py-2 rounded w-64 outline-none text-white "
             />
 
-            <Button onClick={handleJoinVideoCall}>
+            <Button onClick={handleJoinVideoCall} className="cursor-pointer">
               Join
             </Button>
           </div>
 
           {isGuest && (
-            <p className="text-sm text-shadow-zinc-50">
+            <p className="text-sm text-zinc-400">
               You are joining as guest
             </p>
           )}

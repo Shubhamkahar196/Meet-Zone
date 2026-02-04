@@ -254,7 +254,7 @@ export default function VideoMeet() {
   // UI
   // ====================================================
 return (
-  <div className="h-screen bg-zinc-950 text-white">
+  <div className="h-screen  text-white">
 
     {askForUsername ? (
       <div className="flex h-full items-center justify-center">
