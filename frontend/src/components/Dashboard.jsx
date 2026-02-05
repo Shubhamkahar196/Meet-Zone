@@ -4,6 +4,8 @@ import { useContext, useState } from "react";
 import { Button } from "./ui/button";
 import { AuthContext } from "@/context/AuthContext";
 
+
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const [params] = useSearchParams();
@@ -14,9 +16,7 @@ const Dashboard = () => {
   const { addToHistory, token } = useContext(AuthContext);
 
   
-  //  todo
-  // fixing addToHistory
-  // fixing issue
+ 
 
   const handleJoinVideoCall = async () => {
     if (!isGuest && meetingCode.trim()) {

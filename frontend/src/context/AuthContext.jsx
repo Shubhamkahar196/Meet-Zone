@@ -62,6 +62,31 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const getHistory = async()=>{
+    try {
+      const request = await axios.get(`${API_BASE_URL}/getHistory`,{
+        params: {
+          token: localStorage.getItem("token")
+        }
+      });
+      return request.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const addHistory = async()=>{
+    try {
+      const request = await axios.post(`${API_BASE_URL}/addHistory`,{
+        token: localStorage.getItem("token"),
+        meeting_code : meetingCode
+      });
+      return request
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   const logout = () => {
     setUser(null);
     setToken(null);
@@ -69,7 +94,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ signup, login, logout, user, token, loading }}>
+    <AuthContext.Provider value={{ signup, login, logout, user, token, loading ,getHistory,addHistory}}>
       {children}
     </AuthContext.Provider>
   );
