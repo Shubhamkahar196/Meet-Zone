@@ -21,10 +21,10 @@ const History = () => {
     };
 
     fetchHistory();
-  }, []);
+  }, [getHistoryUser]);
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white p-10">
+    <div className="min-h-screen text-white p-10">
 
       <h1 className="text-3xl font-bold mb-6">Meeting History</h1>
 

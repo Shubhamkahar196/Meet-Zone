@@ -283,26 +283,26 @@ return (
     ) : (
       <>
         {/* VIDEO GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-4"> 
 
           {/* LOCAL VIDEO */}
-          <div className="relative rounded bg-black flex items-center justify-center">
+           <div className="relative rounded bg-black flex items-center justify-center">
             {video ? (
               <video
                 ref={localVideoref}
                 autoPlay
                 muted
-                className="w-full h-full object-cover rounded"
+                className="w-full h-full object-contain rounded"
               />
             ) : (
               <div className="w-28 h-28 rounded-full bg-zinc-700 flex items-center justify-center text-4xl font-bold">
                 {username.charAt(0).toUpperCase()}
-              </div>
+              </div> 
             )}
           </div>
 
           {/* REMOTE VIDEOS */}
-          {videos.map((v) => (
+            {videos.map((v) => (
             <div
               key={v.socketId}
               className="relative rounded bg-black flex items-center justify-center"
@@ -315,6 +315,9 @@ return (
             </div>
           ))}
         </div>
+
+ 
+
 
         {/* CONTROL BAR */}
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 flex gap-3 bg-zinc-900 px-4 py-2 rounded-full">

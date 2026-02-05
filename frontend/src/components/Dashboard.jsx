@@ -13,14 +13,14 @@ const Dashboard = () => {
 
   const [meetingCode, setMeetingCode] = useState("");
 
-  const { addToHistory, token } = useContext(AuthContext);
+  const { addHistory, token } = useContext(AuthContext);
 
   
  
 
   const handleJoinVideoCall = async () => {
     if (!isGuest && meetingCode.trim()) {
-      await addToHistory(meetingCode);
+      await addHistory(meetingCode);
     }
 
     navigate(`/${meetingCode}`);
@@ -107,3 +107,4 @@ const Dashboard = () => {
 };
 
 export default withAuth(Dashboard);
+

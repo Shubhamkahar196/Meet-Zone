@@ -75,7 +75,7 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
-  const addHistory = async()=>{
+  const addHistory = async(meetingCode)=>{
     try {
       const request = await axios.post(`${API_BASE_URL}/addHistory`,{
         token: localStorage.getItem("token"),

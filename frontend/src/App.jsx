@@ -6,6 +6,7 @@ import LoginPage from "./components/LoginPage";
 import Layout from "./components/Layout";
 import VideoMeet from "./components/VideoMeet";
 import Dashboard from "./components/Dashboard";
+import History from "./components/History";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/signup" element={<LoginPage />} />
             <Route path="/dashboard" element={<Dashboard/>} />
+            <Route  path="/history" element={<History/>}/>
             <Route path="/:url" element={<VideoMeet/>}/>
           </Routes>
         </Layout>
