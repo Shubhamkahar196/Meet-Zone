@@ -20,6 +20,12 @@ export const connectToSocket = (server) => {
     socket.on("join-call", (path) => {
 
       if (!connections[path]) connections[path] = [];
+      // limit to for 2 user only
+
+      if(connections[path].length >=2){
+        socket.emit("room-full");
+        return;
+      }
 
       connections[path].push(socket.id);
       timeOnline[socket.id] = new Date();

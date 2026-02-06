@@ -56,10 +56,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-zinc-950 text-white">
+    <div className="flex items-center justify-center min-h-screen  text-white">
       <Card className="w-full max-w-md bg-zinc-900 border-zinc-800">
         <CardHeader>
-          <CardTitle className="text-center text-2xl">
+          <CardTitle className="text-center text-2xl text-white">
             {isLogin ? "Login" : "Sign Up"}
           </CardTitle>
           <CardDescription className="text-center">
@@ -72,31 +72,31 @@ export default function LoginPage() {
 
             {!isLogin && (
               <div>
-                <Label>Name</Label>
-                <Input name="name" value={formData.name} onChange={handleChange} />
+                <Label className="text-xl text-white">Name</Label>
+                <Input name="name" value={formData.name} onChange={handleChange} className="text-white font-semibold mt-2" />
               </div>
             )}
 
             <div>
-              <Label>Username</Label>
-              <Input name="username" value={formData.username} onChange={handleChange} />
+              <Label className="text-xl text-white">Username</Label>
+              <Input name="username" value={formData.username} onChange={handleChange}  className="text-white font-semibold mt-2" />
             </div>
 
             <div>
-              <Label>Password</Label>
-              <Input type="password" name="password" value={formData.password} onChange={handleChange} />
+              <Label className="text-xl text-white">Password</Label>
+              <Input type="password" name="password" value={formData.password} onChange={handleChange} className="text-white font-semibold mt-2"  />
             </div>
 
-            <Button className="w-full" disabled={loading}>
+            <Button className="w-full cursor-pointer bg-blue-500 hover:bg-blue-700" disabled={loading}>
               {loading ? "Loading..." : isLogin ? "Login" : "Signup"}
             </Button>
           </form>
 
-          <p className="text-center mt-4 text-sm">
+          <p className="text-center mt-4 text-sm text-zinc-400">
             {isLogin ? "No account?" : "Already have account?"}
             <button
               onClick={() => setIsLogin(!isLogin)}
-              className="ml-2 text-blue-400"
+              className="ml-2 text-blue-400 cursor-pointer hover:text-blue-700 hover:font-bold"
             >
               {isLogin ? "Signup" : "Login"}
             </button>

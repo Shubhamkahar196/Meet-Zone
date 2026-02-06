@@ -137,6 +137,12 @@ export default function VideoMeet() {
 
     socketRef.current.on("signal", gotMessageFromServer);
 
+    // for 2 user
+        socketRef.current.on("room-full",()=>{
+          alert("Room already has 2 users!");
+          window.location.href ="/";
+        })
+
     socketRef.current.on("connect", () => {
       toast.success("Connected");
 
@@ -152,6 +158,8 @@ export default function VideoMeet() {
 
       socketRef.current.on("user-joined", (id, clients) => {
         toast.success("New participant joined");
+
+        
 
         clients.forEach((socketListId) => {
           connections[socketListId] = new RTCPeerConnection(peerConfigConnections);
@@ -274,7 +282,7 @@ return (
               className="rounded w-full h-48 object-cover"
             />
 
-            <Button onClick={connect} className="w-full">
+            <Button onClick={connect} className="w-full cursor-pointer bg-blue-500 hover:bg-blue-700">
               Join
             </Button>
           </CardContent>
@@ -283,7 +291,7 @@ return (
     ) : (
       <>
         {/* VIDEO GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-4"> 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 p-4"> 
 
           {/* LOCAL VIDEO */}
            <div className="relative rounded bg-black flex items-center justify-center">
@@ -292,7 +300,7 @@ return (
                 ref={localVideoref}
                 autoPlay
                 muted
-                className="w-full h-full object-contain rounded"
+                className="w-full h-full object-contain rounded md:w-[50%] md:h-[50%]"
               />
             ) : (
               <div className="w-28 h-28 rounded-full bg-zinc-700 flex items-center justify-center text-4xl font-bold">
