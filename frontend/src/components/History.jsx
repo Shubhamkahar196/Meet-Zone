@@ -1,11 +1,11 @@
 import { AuthContext } from "@/context/AuthContext";
 import { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 const History = () => {
-  const { getHistoryUser } = useContext(AuthContext);
+  const { getHistoryUser, token } = useContext(AuthContext);
   const [meetings, setMeetings] = useState([]);
 
   const navigate = useNavigate();
@@ -14,50 +14,83 @@ const History = () => {
     const fetchHistory = async () => {
       try {
         const history = await getHistoryUser();
-        setMeetings(history);
+        setMeetings(history || []);
       } catch (err) {
         console.error(err);
       }
     };
 
     fetchHistory();
-  }, [getHistoryUser]);
+  }, []);
 
   return (
-    <div className="min-h-screen text-white p-10">
+    <div className="min-h-screen bg-zinc-950 text-white">
 
-      <h1 className="text-3xl font-bold mb-6">Meeting History</h1>
+      {/* NAVBAR */}
+      <nav className="flex justify-between items-center px-10 py-6 border-b border-zinc-800">
 
-      {meetings.length === 0 && (
-        <p className="text-zinc-400">No meetings yet.</p>
-      )}
+        <Link to="/dashboard">
+          <h1 className="text-2xl font-bold">
+            <span className="text-blue-400">Meet</span>-
+            <span className="text-red-400">Zone</span>
+          </h1>
+        </Link>
 
-      <div className="grid md:grid-cols-3 gap-4">
+        {token && (
+          <Button
+            variant="destructive"
+            onClick={() => {
+              localStorage.removeItem("token");
+              navigate("/");
+            }}
+          >
+            Logout
+          </Button>
+        )}
+      </nav>
 
-        {meetings.map((meeting, index) => (
-          <Card key={index} className="bg-zinc-900 border-zinc-800">
+      {/* CONTENT */}
+      <div className="p-10">
 
-            <CardHeader>
-              <CardTitle className="text-sm">
-                Meeting Code
-              </CardTitle>
-            </CardHeader>
+        <h1 className="text-3xl font-bold mb-8">Meeting History</h1>
 
-            <CardContent className="space-y-4">
-              <p className="font-mono text-lg">
-                {meeting.meeting_code}
-              </p>
+        {meetings.length === 0 && (
+          <div className="text-center text-zinc-400 mt-20">
+            <p>No meetings yet.</p>
+          </div>
+        )}
 
-              <Button
-                className="w-full"
-                onClick={() => navigate(`/${meeting.meeting_code}`)}
-              >
-                Join Again
-              </Button>
-            </CardContent>
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
 
-          </Card>
-        ))}
+          {meetings.map((meeting, index) => (
+            <Card
+              key={index}
+              className="bg-zinc-900 border-zinc-800 hover:border-blue-500 transition"
+            >
+              <CardHeader>
+                <CardTitle className="text-sm text-zinc-400">
+                  Meeting Code
+                </CardTitle>
+              </CardHeader>
+
+              <CardContent className="space-y-4">
+
+                <p className="font-mono text-xl text-blue-400">
+                  {meeting.meeting_code}
+                </p>
+
+                <Button
+                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  onClick={() => navigate(`/${meeting.meeting_code}`)}
+                >
+                  Join Again
+                </Button>
+
+              </CardContent>
+            </Card>
+          ))}
+
+        </div>
 
       </div>
     </div>
